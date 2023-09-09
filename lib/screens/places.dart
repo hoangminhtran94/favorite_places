@@ -1,6 +1,6 @@
 import 'package:favorite_places/provider/place_provider.dart';
-import 'package:favorite_places/screens/new_places.dart';
-import 'package:favorite_places/screens/place_details.dart';
+import 'package:favorite_places/screens/new_place.dart';
+import 'package:favorite_places/widgets/place_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,21 +21,7 @@ class PlacesScreen extends ConsumerWidget {
     if (places.isNotEmpty) {
       body = ListView.builder(
         itemCount: places.length,
-        itemBuilder: (ctx, index) => InkWell(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (ctx) => PlaceDetailsScreen(place: places[index])));
-          },
-          child: Dismissible(
-            key: Key(places[index].id),
-            onDismissed: (direction) {},
-            child: ListTile(
-                title: Text(
-              places[index].name,
-              style: Theme.of(context).textTheme.titleMedium,
-            )),
-          ),
-        ),
+        itemBuilder: (ctx, index) => PlaceItem(place: places[index]),
       );
     }
     return Scaffold(
