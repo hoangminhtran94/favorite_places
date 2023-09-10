@@ -15,11 +15,16 @@ class PlaceItem extends StatelessWidget {
       child: Dismissible(
         key: Key(place.id),
         onDismissed: (direction) {},
-        child: ListTile(
-            title: Text(
-          place.name,
-          style: Theme.of(context).textTheme.titleMedium,
-        )),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+              leading: CircleAvatar(
+                  radius: 26, backgroundImage: FileImage(place.image)),
+              title: Text(
+                place.name,
+                style: Theme.of(context).textTheme.titleMedium,
+              )),
+        ),
       ),
     );
   }

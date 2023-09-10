@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/provider/place_provider.dart';
 import 'package:favorite_places/widgets/image_input.dart';
@@ -18,13 +20,20 @@ class NewPlaceScreen extends ConsumerStatefulWidget {
 
 class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
   final _formKey = GlobalKey<FormState>();
-  var _currentName = "";
+  var _enteredName = "";
+  File? _takenImage;
   void _addNewPlace() {
     _formKey.currentState!.save();
-    ref
-        .read(placeProvider.notifier)
-        .addAPlace(Place(id: uuid.v4(), name: _currentName));
+    if (_enteredName.isEmpty || _takenImage == null) {
+      return;
+    }
+    ref.read(placeProvider.notifier).addAPlace(
+        Place(id: uuid.v4(), name: _enteredName, image: _takenImage!));
     Navigator.of(context).pop();
+  }
+
+  void _takeImage(File image) {
+    _takenImage = image;
   }
 
   @override
@@ -46,13 +55,15 @@ class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
                   onSaved: (newValue) {
                     if (newValue != null) {
                       setState(() {
-                        _currentName = newValue;
+                        _enteredName = newValue;
                       });
                     }
                   },
                 ),
                 const SizedBox(height: 16),
-                const ImageInput(),
+                ImageInput(
+                  onPickImage: _takeImage,
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                     onPressed: _addNewPlace,
