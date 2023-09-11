@@ -20,9 +20,13 @@ class PlaceItem extends StatelessWidget {
           child: ListTile(
               leading: CircleAvatar(
                   radius: 26, backgroundImage: FileImage(place.image)),
+              subtitle: Text(place.location.address,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground)),
               title: Text(
                 place.name,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground),
               )),
         ),
       ),
