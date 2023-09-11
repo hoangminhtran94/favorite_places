@@ -1,29 +1,29 @@
 import 'package:favorite_places/provider/place_provider.dart';
 import 'package:favorite_places/screens/new_place.dart';
 import 'package:favorite_places/widgets/place_item.dart';
+import 'package:favorite_places/widgets/place_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlacesScreen extends ConsumerWidget {
+class PlacesScreen extends ConsumerStatefulWidget {
   const PlacesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final places = ref.watch(placeProvider);
-    Widget body = const Center(
-      child: Text(
-        "There are no places, please add new place first",
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-    );
-    if (places.isNotEmpty) {
-      body = ListView.builder(
-        itemCount: places.length,
-        itemBuilder: (ctx, index) => PlaceItem(place: places[index]),
-      );
-    }
+  ConsumerState<PlacesScreen> createState() {
+    return _PlacesScreenState();
+  }
+}
+
+class _PlacesScreenState extends ConsumerState<PlacesScreen> {
+  late Future<void> _placesFuture;
+  @override
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(placeProvider.notifier).loadPlaces();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Your Places"),
@@ -38,6 +38,14 @@ class PlacesScreen extends ConsumerWidget {
                 icon: const Icon(Icons.add))
           ],
         ),
-        body: body);
+        body: FutureBuilder(
+            future: _placesFuture,
+            builder: (ctx, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return const PlaceList();
+              }
+            }));
   }
 }

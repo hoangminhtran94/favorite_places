@@ -7,6 +7,8 @@ import 'package:favorite_places/widgets/location_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path_provider/path_provider.dart' as syspaths;
+import 'package:path/path.dart' as path;
 
 const uuid = Uuid();
 
@@ -24,17 +26,20 @@ class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
   var _enteredName = "";
   PlaceLocation? _pickedLocation;
   File? _takenImage;
-  void _addNewPlace() {
+  void _addNewPlace() async {
     _formKey.currentState!.save();
     if (_enteredName.isEmpty ||
         _takenImage == null ||
         _pickedLocation == null) {
       return;
     }
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final filename = path.basename(_takenImage!.path);
+    final copiedImage = await _takenImage!.copy('${appDir.path}/$filename');
     ref.read(placeProvider.notifier).addAPlace(Place(
         id: uuid.v4(),
         name: _enteredName,
-        image: _takenImage!,
+        image: copiedImage,
         location: _pickedLocation!));
     Navigator.of(context).pop();
   }
